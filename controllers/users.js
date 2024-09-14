@@ -20,8 +20,6 @@ const getUsers = (req, res) => {
     });
 };
 
-//UPDATE CREATE USERS
-
 const createUser = (req, res) => {
   const { name, avatar, email, password } = req.body;
   bcrypt
@@ -44,7 +42,6 @@ const createUser = (req, res) => {
     });
 };
 
-//THEN  CREATE LOGIN CONTROLLER
 const login = (req, res) => {
   const { email, password } = req.body;
 
@@ -77,7 +74,6 @@ const login = (req, res) => {
     });
 };
 
-//current user
 const getUser = (req, res) => {
   const { userId } = req.params;
   User.findById(userId)
