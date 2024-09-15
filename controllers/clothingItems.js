@@ -39,7 +39,7 @@ const deleteItem = (req, res) => {
   const { itemId } = req.params;
   const userId = req.user._id;
 
-  ClothingItem.findByIdAndDelete(itemId)
+  ClothingItem.findById(itemId)
     .orFail()
     .then((item) => {
       const ownerId = item.owner.toString();
@@ -49,8 +49,21 @@ const deleteItem = (req, res) => {
           .status(FORBIDDEN)
           .send({ message: "You do not have permission to delete this item" });
       }
-    })
 
+      return ClothingItem.findByIdAndDelete(itemId)
+        .then(() => res.send({ message: "Item successfully deleted" }))
+        .catch((err) => {
+          console.error(`Error ${err.name} with message ${err.message}`);
+
+          if (err.name === "CastError") {
+            return res.status(BAD_REQUEST).send({ message: "Invalid data" });
+          }
+
+          return res
+            .status(INTERNAL_SERVER_ERROR)
+            .send({ message: "An error has occurred on the server" });
+        });
+    })
     .catch((err) => {
       console.error(`Error ${err.name} with message ${err.message}`);
 
