@@ -80,9 +80,6 @@ const login = (req, res) => {
           .status(UNAUTHORIZED)
           .send({ message: "Incorrect email or password" });
       }
-      if (err.name === "CastError") {
-        return res.status(BAD_REQUEST).send({ message: "Invalid data" });
-      }
 
       return res
         .status(INTERNAL_SERVER_ERROR)
