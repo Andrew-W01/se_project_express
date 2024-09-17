@@ -11,11 +11,25 @@ const {
 } = require("../utils/errors");
 const { JWT_SECRET } = require("../utils/config");
 
-const getUsers = (req, res) => {
-  User.find({})
-    .then((users) => res.send(users))
+const updateUser = (req, res) => {
+  const userId = req.user._id;
+  const { name, avatar } = req.body;
+
+  User.findByIdAndUpdate(
+    userId,
+    { name, avatar },
+    { new: true, runValidators: true }
+  )
+    .then((updateUser) => {
+      if (!updateUser) {
+        return res.status(NOT_FOUND).send({ message: "User not found" });
+      }
+      return res.send(updateUser);
+    })
     .catch((err) => {
-      console.error(err);
+      if (err.name === "ValidationError") {
+        return res.status(BAD_REQUEST).send({ message: "Invaild data" });
+      }
       return res
         .status(INTERNAL_SERVER_ERROR)
         .send({ message: "An error has occurred on the server" });
@@ -27,7 +41,7 @@ const createUser = (req, res) => {
   bcrypt
     .hash(password, 10)
     .then((hash) => User.create({ name, avatar, email, password: hash }))
-    .then((user) => res.status(201).send(user))
+    .then(() => res.status(201).send(name, avatar, email))
     .catch((err) => {
       console.error(err);
       if (err.code === 11000) {
@@ -77,7 +91,7 @@ const login = (req, res) => {
 };
 
 const getUser = (req, res) => {
-  const { userId } = req.params;
+  const { userId } = req.user._id;
   User.findById(userId)
     .orFail()
     .then((user) => res.status(200).send(user))
@@ -94,4 +108,4 @@ const getUser = (req, res) => {
         .send({ message: "An error has occurred on the server" });
     });
 };
-module.exports = { getUsers, createUser, getUser, login };
+module.exports = { updateUser, createUser, getUser, login };
