@@ -20,8 +20,8 @@ const updateUser = (req, res) => {
     { name, avatar },
     { new: true, runValidators: true }
   )
-    .then((updateUser) => {
-      if (!updateUser) {
+    .then((updatedUser) => {
+      if (!updatedUser) {
         return res.status(NOT_FOUND).send({ message: "User not found" });
       }
       return res.send(updateUser);
@@ -88,7 +88,7 @@ const login = (req, res) => {
 };
 
 const getUser = (req, res) => {
-  const { userId } = req.user._id;
+  const userId = req.user._id;
   User.findById(userId)
     .orFail()
     .then((user) => res.status(200).send(user))
