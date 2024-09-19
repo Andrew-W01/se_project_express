@@ -24,7 +24,7 @@ const updateUser = (req, res) => {
       if (!updatedUser) {
         return res.status(NOT_FOUND).send({ message: "User not found" });
       }
-      return res.send(updateUser);
+      return res.send(updatedUser);
     })
     .catch((err) => {
       if (err.name === "ValidationError") {
@@ -41,7 +41,7 @@ const createUser = (req, res) => {
   bcrypt
     .hash(password, 10)
     .then((hash) => User.create({ name, avatar, email, password: hash }))
-    .then(() => res.status(201).send(name, avatar, email))
+    .then(() => res.status(201).send({ name, avatar, email }))
     .catch((err) => {
       console.error(err);
       if (err.code === 11000) {
