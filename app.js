@@ -2,6 +2,8 @@ const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const mainRouter = require("./routes/index");
+const { INTERNAL_SERVER_ERROR } = require("./utils/errors");
+
 // const auth = require("./middlewares/auth");
 
 const app = express();
@@ -22,6 +24,14 @@ app.use(express.json());
 
 // app.use(auth);
 app.use("/", mainRouter);
+
+app.use((err, req, res, next) => {
+  console.error(err);
+  return res
+    .status(INTERNAL_SERVER_ERROR)
+    .send({ message: "An error occurred on the server" });
+  next();
+});
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
