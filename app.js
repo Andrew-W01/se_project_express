@@ -3,6 +3,7 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const mainRouter = require("./routes/index");
 const { INTERNAL_SERVER_ERROR } = require("./utils/errors");
+const { errors } = require("celebrate");
 
 // const auth = require("./middlewares/auth");
 
@@ -22,8 +23,13 @@ app.use(cors());
 
 app.use(express.json());
 
-// app.use(auth);
 app.use("/", mainRouter);
+
+app.use(routes);
+
+app.use(errors());
+
+app.use(errorHandler);
 
 app.use((err, req, res, next) => {
   console.error(err);
