@@ -25,11 +25,11 @@ app.use(express.json());
 
 app.use("/", mainRouter);
 
-app.use(routes);
+// app.use(routes);
 
 app.use(errors());
 
-app.use(errorHandler);
+// app.use(errorHandler);
 
 app.use((err, req, res, next) => {
   console.error(err);

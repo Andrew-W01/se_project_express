@@ -1,4 +1,4 @@
-const { BadRequestError } = require("../errors/BadRequstError");
+const { BadRequestError } = require("../errors/BadRequestError");
 const { NotFound } = require("../errors/NotFound");
 const { DuplicateError } = require("../errors/DuplicateError");
 const { Default } = require("../errors/Default");
