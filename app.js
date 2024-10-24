@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const mainRouter = require("./routes/index");
 const { INTERNAL_SERVER_ERROR } = require("./utils/errors");
 const { errors } = require("celebrate");
-
+require("dotenv").config();
 // const auth = require("./middlewares/auth");
 
 const app = express();
