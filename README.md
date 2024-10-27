@@ -16,5 +16,7 @@ This project serves as the back-end for the WTWR (What to Wear?) application. It
 
 ## Prerequisites
 
+- [Website URL](https://www.aw-demo.wildsurf.net/)
+
 - [Node.js](https://nodejs.org/en/)
 - [MongoDB](https://www.mongodb.com/)

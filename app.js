@@ -20,16 +20,18 @@ mongoose
   .catch(console.error);
 
 app.use(cors());
-
 app.use(express.json());
 
+app.get("/crash-test", () => {
+  setTimeout(() => {
+    throw new Error("Server will crash now");
+  }, 0);
+});
+
 app.use("/", mainRouter);
-
-// app.use(routes);
-
+app.use(routes);
 app.use(errors());
-
-// app.use(errorHandler);
+app.use(errorHandler);
 
 app.use((err, req, res, next) => {
   console.error(err);
