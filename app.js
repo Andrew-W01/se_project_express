@@ -1,17 +1,18 @@
+// Import from packages
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
-const mainRouter = require("./routes/index");
-const { INTERNAL_SERVER_ERROR } = require("./utils/errors");
+
+// Import middleware
 const { errors } = require("celebrate");
-require("dotenv").config();
-// const auth = require("./middlewares/auth");
+const errorHandler = require("./middlewares/error-handler");
+const { requestLogger, errorLogger } = require("./middlewares/logger");
 
-const app = express();
-const { PORT = 3001 } = process.env;
+// Import routes index
+const mainRouter = require("./routes/index");
 
-mongoose.set("strictQuery", false);
-
+// Connect to database
 mongoose
   .connect("mongodb://127.0.0.1:27017/wtwr_db")
   .then(() => {
@@ -19,28 +20,31 @@ mongoose
   })
   .catch(console.error);
 
+// Create express server in app variable
+const app = express();
+
+mongoose.set("strictQuery", false);
+
+// Apps logic
 app.use(cors());
 app.use(express.json());
 
+// test
 app.get("/crash-test", () => {
   setTimeout(() => {
     throw new Error("Server will crash now");
   }, 0);
 });
 
+// Apps logic
+app.use(requestLogger);
 app.use("/", mainRouter);
-app.use(routes);
+app.use(errorLogger);
 app.use(errors());
 app.use(errorHandler);
 
-app.use((err, req, res, next) => {
-  console.error(err);
-  return res
-    .status(INTERNAL_SERVER_ERROR)
-    .send({ message: "An error occurred on the server" });
-  next();
-});
-
+// Configure port
+const { PORT = 3001 } = process.env;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });

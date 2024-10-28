@@ -1,21 +1,20 @@
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = require("../utils/config");
-const { UNAUTHORIZED } = require("../utils/errors");
 
-const auth = (req, res, next) => {
+const NotAuthorized = require("../errors/NotAuthorized");
+
+module.exports = (req, res, next) => {
   const { authorization } = req.headers;
-
-  if (!authorization || !authorization.startsWith("Bearer ")) {
-    return res.status(UNAUTHORIZED).send({ message: "Authorization required" });
+  if (authorization === "Bearer null" || !authorization.startsWith("Bearer ")) {
+    throw new NotAuthorized("User isn't logged in");
   }
-
   const token = authorization.replace("Bearer ", "");
   let payload;
 
   try {
     payload = jwt.verify(token, JWT_SECRET);
   } catch (err) {
-    return res.status(UNAUTHORIZED).send({ message: "Authorization required" });
+    throw new NotAuthorized("Invalid token");
   }
 
   req.user = payload;
