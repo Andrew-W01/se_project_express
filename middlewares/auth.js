@@ -3,7 +3,7 @@ const { JWT_SECRET } = require("../utils/config");
 
 const NotAuthorized = require("../errors/NotAuthorized");
 
-module.exports = (req, res, next) => {
+const auth = (req, res, next) => {
   const { authorization } = req.headers;
   if (authorization === "Bearer null" || !authorization.startsWith("Bearer ")) {
     throw new NotAuthorized("User isn't logged in");
@@ -21,5 +21,4 @@ module.exports = (req, res, next) => {
 
   return next();
 };
-
 module.exports = auth;

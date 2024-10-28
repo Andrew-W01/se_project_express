@@ -7,7 +7,7 @@ const {
   likeItem,
   dislikeItem,
 } = require("../controllers/clothingItems");
-const { validateId, validateCardBody } = require("../middleware/validation");
+const { validateId, validateCardBody } = require("../middlewares/validation");
 
 router.get("/", getItems);
 
