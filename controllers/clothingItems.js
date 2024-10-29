@@ -1,13 +1,13 @@
 const ClothingItem = require("../models/clothingItem");
-const {
-  BadRequestError,
-  ForbiddenError,
-  NotFound,
-  Default,
-  NotAuthorized,
-  handleErrors,
-  DuplicateError,
-} = require("../utils/errors");
+const BadRequestError = require("../errors/BadRequestError");
+const ForbiddenError = require("../errors/ForbiddenError");
+const NotFound = require("../errors/NotFound");
+// const {
+//   BAD_REQUEST,
+//   NOT_FOUND,
+//   INTERNAL_SERVER_ERROR,
+//   FORBIDDEN,
+// } = require("../utils/errors");
 
 const createItem = (req, res) => {
   const { name, weather, imageUrl } = req.body;
@@ -17,16 +17,18 @@ const createItem = (req, res) => {
       res.send({ data: item });
     })
     .catch((error) => {
-      handleErrors(error, next);
+      if (error.name === "ValidationError") {
+        next(new BadRequestError("Data is not valid"));
+      } else {
+        next(err);
+      }
     });
 };
 
-const getItems = (req, res) => {
+const getItems = (req, res, next) => {
   ClothingItem.find({})
     .then((items) => res.send(items))
-    .catch((error) => {
-      handleErrors(error, next);
-    });
+    .catch(next);
 };
 
 const deleteItem = (req, res) => {
@@ -39,19 +41,21 @@ const deleteItem = (req, res) => {
       const ownerId = item.owner.toString();
 
       if (userId !== ownerId) {
-        return res
-          .status(FORBIDDEN)
-          .send({ message: "You do not have permission to delete this item" });
+        throw new ForbiddenError("This user is not the owner of the item");
       }
 
-      return ClothingItem.findByIdAndDelete(itemId)
-        .then(() => res.send({ message: "Item successfully deleted" }))
-        .catch((error) => {
-          handleErrors(error, next);
-        });
+      return ClothingItem.findByIdAndDelete(itemId).then(() =>
+        res.send({ message: "Item successfully deleted" })
+      );
     })
-    .catch((error) => {
-      handleErrors(error, next);
+    .catch((err) => {
+      if (err.name === "DocumentNotFoundError") {
+        next(new NotFound("Data not found"));
+      } else if (err.name === "CastError" || err.name === "ValidationError") {
+        next(new BadRequestError("Invalid data"));
+      } else {
+        next(err);
+      }
     });
 };
 
@@ -65,8 +69,14 @@ const likeItem = (req, res) => {
     .then((item) => {
       res.send({ data: item });
     })
-    .catch((error) => {
-      handleErrors(error, next);
+    .catch((err) => {
+      if (err.name === "DocumentNotFoundError") {
+        next(new NotFound("Data not found"));
+      } else if (err.name === "CastError" || err.name === "ValidationError") {
+        next(new BadRequestError("Invalid data"));
+      } else {
+        next(err);
+      }
     });
 };
 
@@ -80,8 +90,14 @@ const dislikeItem = (req, res) => {
     .then((item) => {
       res.send({ data: item });
     })
-    .catch((error) => {
-      handleErrors(error, next);
+    .catch((err) => {
+      if (err.name === "DocumentNotFoundError") {
+        next(new NotFound("Data not found"));
+      } else if (err.name === "CastError" || err.name === "ValidationError") {
+        next(new BadRequestError("Invalid data"));
+      } else {
+        next(err);
+      }
     });
 };
 
