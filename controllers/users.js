@@ -3,12 +3,12 @@ const bcrypt = require("bcryptjs");
 
 const User = require("../models/user");
 const BadRequestError = require("../errors/BadRequestError");
-const DuplicateError = require("../errors/DuplicateError");
+// const DuplicateError = require("../errors/DuplicateError");
 const NotAuthorized = require("../errors/NotAuthorized");
 const NotFound = require("../errors/NotFound");
 const { JWT_SECRET } = require("../utils/config");
 
-const updateUser = (req, res) => {
+const updateUser = (req, res, next) => {
   const userId = req.user._id;
   const { name, avatar } = req.body;
 
@@ -19,7 +19,7 @@ const updateUser = (req, res) => {
   )
     .then((updatedUser) => {
       if (!updatedUser) {
-        return res.status(NOT_FOUND).send({ message: "User not found" });
+        return res.status(NotFound).send({ message: "User not found" });
       }
       return res.send(updatedUser);
     })
@@ -36,14 +36,14 @@ const updateUser = (req, res) => {
     });
 };
 
-const createUser = (req, res) => {
+const createUser = (req, res, next) => {
   const { name, avatar, email, password } = req.body;
   bcrypt
     .hash(password, 10)
     .then((hash) => User.create({ name, avatar, email, password: hash }))
     .then(() => res.status(201).send({ name, avatar, email }))
     .catch((err) => {
-      if (err.name === "ValidationError") {
+      if (err.code === "110000") {
         return next(new BadRequestError("Invalid data"));
       }
 
@@ -51,12 +51,12 @@ const createUser = (req, res) => {
     });
 };
 
-const login = (req, res) => {
+const login = (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
     return res
-      .status(BAD_REQUEST)
+      .status(BadRequestError)
       .send({ message: "Email and password are required" });
   }
 
@@ -76,7 +76,7 @@ const login = (req, res) => {
     });
 };
 
-const getUser = (req, res) => {
+const getUser = (req, res, next) => {
   const userId = req.user._id;
   User.findById(userId)
     .orFail()

@@ -9,7 +9,7 @@ const NotFound = require("../errors/NotFound");
 //   FORBIDDEN,
 // } = require("../utils/errors");
 
-const createItem = (req, res) => {
+const createItem = (req, res, next) => {
   const { name, weather, imageUrl } = req.body;
 
   ClothingItem.create({ name, weather, imageUrl, owner: req.user._id })
@@ -20,7 +20,7 @@ const createItem = (req, res) => {
       if (error.name === "ValidationError") {
         next(new BadRequestError("Data is not valid"));
       } else {
-        next(err);
+        next(error);
       }
     });
 };
@@ -48,7 +48,7 @@ const deleteItem = (req, res) => {
         res.send({ message: "Item successfully deleted" })
       );
     })
-    .catch((err) => {
+    .catch((err, next) => {
       if (err.name === "DocumentNotFoundError") {
         next(new NotFound("Data not found"));
       } else if (err.name === "CastError" || err.name === "ValidationError") {
@@ -59,7 +59,7 @@ const deleteItem = (req, res) => {
     });
 };
 
-const likeItem = (req, res) => {
+const likeItem = (req, res, next) => {
   ClothingItem.findByIdAndUpdate(
     req.params.itemId,
     { $addToSet: { likes: req.user._id } },
@@ -80,7 +80,7 @@ const likeItem = (req, res) => {
     });
 };
 
-const dislikeItem = (req, res) => {
+const dislikeItem = (req, res, next) => {
   ClothingItem.findByIdAndUpdate(
     req.params.itemId,
     { $pull: { likes: req.user._id } },
