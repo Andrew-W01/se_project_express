@@ -15,8 +15,8 @@ router.post("/signup", validateUserBody, createUser);
 router.use(auth);
 router.use("/users", userRouter);
 
-router.use((req, res) => {
-  res.status(NotFound).send({ message: "Resource not found" });
+router.use((req, res, next) => {
+  next(new NotFound("Resource not found"));
 });
 
 module.exports = router;
