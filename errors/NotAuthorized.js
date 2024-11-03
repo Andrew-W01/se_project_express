@@ -4,6 +4,4 @@ class NotAuthorized extends Error {
     this.statusCode = 401;
   }
 }
-module.exports = {
-  NotAuthorized,
-};
+module.exports = NotAuthorized;

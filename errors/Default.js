@@ -4,6 +4,4 @@ class Default extends Error {
     this.statusCode = 500;
   }
 }
-module.exports = {
-  Default,
-};
+module.exports = Default;

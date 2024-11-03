@@ -4,6 +4,4 @@ class DuplicateError extends Error {
     this.statusCode = 409;
   }
 }
-module.exports = {
-  DuplicateError,
-};
+module.exports = DuplicateError;
