@@ -31,7 +31,7 @@ const getItems = (req, res, next) => {
     .catch(next);
 };
 
-const deleteItem = (req, res) => {
+const deleteItem = (req, res, next) => {
   const { itemId } = req.params;
   const userId = req.user._id;
 
@@ -48,7 +48,7 @@ const deleteItem = (req, res) => {
         res.send({ message: "Item successfully deleted" })
       );
     })
-    .catch((err, next) => {
+    .catch((err) => {
       if (err.name === "DocumentNotFoundError") {
         next(new NotFound("Data not found"));
       } else if (err.name === "CastError" || err.name === "ValidationError") {
